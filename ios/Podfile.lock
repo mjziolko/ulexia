@@ -368,6 +368,8 @@ PODS:
     - React-jsi (= 0.66.4)
     - React-logger (= 0.66.4)
     - React-perflogger (= 0.66.4)
+  - RNSoundPlayer (0.11.3):
+    - React
   - TextToSpeech (4.1.0):
     - React
   - Yoga (1.14.0)
@@ -441,6 +443,7 @@ DEPENDENCIES:
   - React-RCTVibration (from `../node_modules/react-native/Libraries/Vibration`)
   - React-runtimeexecutor (from `../node_modules/react-native/ReactCommon/runtimeexecutor`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
+  - RNSoundPlayer (from `../node_modules/react-native-sound-player`)
   - TextToSpeech (from `../node_modules/react-native-tts`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -548,6 +551,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/runtimeexecutor"
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
+  RNSoundPlayer:
+    :path: "../node_modules/react-native-sound-player"
   TextToSpeech:
     :path: "../node_modules/react-native-tts"
   Yoga:
@@ -610,6 +615,7 @@ SPEC CHECKSUMS:
   React-RCTVibration: e3ffca672dd3772536cb844274094b0e2c31b187
   React-runtimeexecutor: dec32ee6f2e2a26e13e58152271535fadff5455a
   ReactCommon: 57b69f6383eafcbd7da625bfa6003810332313c4
+  RNSoundPlayer: 6b5532fb8e9afe17af48e62813c80ad568aea5d3
   TextToSpeech: b3aa777ff5585705f179c0a2436bfd0926d1716e
   Yoga: e7dc4e71caba6472ff48ad7d234389b91dadc280
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a

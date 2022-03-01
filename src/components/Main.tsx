@@ -1,6 +1,8 @@
 import React from 'react';
 import CookieManager from '@react-native-cookies/cookies';
 import { Text } from 'react-native';
+import jwtDecode from 'jwt-decode';
+
 import Login from './Login';
 import Chat from './Chat';
 // import ImageApp from './ImageApp';
@@ -34,11 +36,10 @@ function Main() {
   const validateCookies = async () => {
     const rawCookies = await CookieManager.get(URL);
     const tokenCookie = rawCookies[cookieNames.token];
-    const csrfCookie = rawCookies[cookieNames.csrf];
-    const callbackCookie = rawCookies[cookieNames.callback];
 
-    if (!(tokenCookie?.expires && csrfCookie && callbackCookie)) {
-      return false;
+    if (!tokenCookie.expires) {
+      const { exp }: { exp: number } = jwtDecode(tokenCookie.value);
+      tokenCookie.expires = new Date(exp * 1000).toISOString();
     }
 
     const expiry = new Date(tokenCookie.expires);

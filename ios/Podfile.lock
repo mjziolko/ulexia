@@ -24,6 +24,8 @@ PODS:
     - ExpoModulesCore
   - Expo (44.0.6):
     - ExpoModulesCore
+  - ExpoHaptics (11.1.1):
+    - ExpoModulesCore
   - ExpoModulesCore (0.6.5):
     - React-Core
     - ReactCommon/turbomodule/core
@@ -395,6 +397,7 @@ DEPENDENCIES:
   - EXImageManipulator (from `../node_modules/expo-image-manipulator/ios`)
   - EXKeepAwake (from `../node_modules/expo-keep-awake/ios`)
   - Expo (from `../node_modules/expo/ios`)
+  - ExpoHaptics (from `../node_modules/expo-haptics/ios`)
   - ExpoModulesCore (from `../node_modules/expo-modules-core/ios`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/React/FBReactNativeSpec`)
@@ -496,6 +499,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-keep-awake/ios"
   Expo:
     :path: "../node_modules/expo/ios"
+  ExpoHaptics:
+    :path: "../node_modules/expo-haptics/ios"
   ExpoModulesCore:
     :path: "../node_modules/expo-modules-core/ios"
   FBLazyVector:
@@ -581,6 +586,7 @@ SPEC CHECKSUMS:
   EXImageManipulator: 60d1bf3f1d7709453b1feb38adf8594b7f58710f
   EXKeepAwake: bf48d7f740a5cd2befed6cf9a49911d385c6c47d
   Expo: 534e51e607aba8229293297da5585f4b26f50fa1
+  ExpoHaptics: 0d0b69b2414755a4057ffad0a10315902c0ea1b7
   ExpoModulesCore: 32c0ccb47f477d330ee93db72505380adf0de09a
   FBLazyVector: e5569e42a1c79ca00521846c223173a57aca1fe1
   FBReactNativeSpec: fe08c1cd7e2e205718d77ad14b34957cce949b58

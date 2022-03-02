@@ -1,5 +1,6 @@
+import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 import React from 'react';
-import { Text } from 'react-native';
+import { Platform, Text } from 'react-native';
 import { Bubble, BubbleProps, GiftedChat, IMessage } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import SoundPlayer from 'react-native-sound-player';
@@ -18,6 +19,10 @@ function Chat() {
   const { bottom } = useSafeAreaInsets();
 
   React.useEffect(() => {
+    SoundPlayer.addEventListener('FinishedLoading', () => {});
+    SoundPlayer.addEventListener('FinishedLoadingURL', () => {});
+    SoundPlayer.addEventListener('FinishedPlaying', () => {});
+
     void (async () => {
       const textResponse = await fetch(`${URL}/api/text`);
       const textList: TextMessage[] = await textResponse.json() as TextMessage[];
@@ -30,6 +35,10 @@ function Chat() {
 
       setLoading(false);
     })();
+
+    return (() => {
+      setMessages([]);
+    });
   }, []);
 
   const onSend = (msgs: IMessage[]) => {
@@ -40,6 +49,7 @@ function Chat() {
   };
 
   const onPress = (_context: object, message: IMessage) => {
+    void impactAsync(ImpactFeedbackStyle.Heavy);
     void speak(message.text);
   };
 
@@ -60,10 +70,17 @@ function Chat() {
         method: 'POST',
       };
 
-      const response = await fetch(`${URL}/api/tts`, options);
-      const { audioContent } = await response.json() as AudioContent;
-      const url = `data:audio/mp3;base64,${audioContent}`;
-      SoundPlayer.playUrl(url);
+      try {
+        const response = await fetch(`${URL}/api/tts`, options);
+        const { audioContent } = await response.json() as AudioContent;
+        const url = `data:audio/mp3;base64,${audioContent}`;
+        if (Platform.OS === 'ios') {
+          SoundPlayer.setSpeaker(true);
+        }
+        SoundPlayer.playUrl(url);
+      } catch {
+        Tts.speak(text);
+      }
     } else {
       Tts.speak(text);
     }

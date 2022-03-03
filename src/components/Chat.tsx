@@ -1,10 +1,12 @@
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 import React from 'react';
-import { Platform, Text } from 'react-native';
+import { LogBox, Platform, Text } from 'react-native';
 import { Bubble, BubbleProps, GiftedChat, IMessage } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import SoundPlayer from 'react-native-sound-player';
 import Tts from 'react-native-tts';
+
+LogBox.ignoreLogs(['new NativeEventEmitter']);
 
 const URL = 'https://lxya-mjz-lxya.vercel.app';
 
@@ -65,7 +67,8 @@ function Chat() {
   const speak = async (text: string) => {
     if (user?.special) {
       const options = {
-        body: JSON.stringify({ text, voice: 'en-US-Wavenet-F' }),
+        body: JSON.stringify({ text, voice: 'en-GB-Wavenet-A' }),
+        // body: JSON.stringify({ text, voice: 'en-US-Wavenet-F' }),
         headers: { 'Content-Type': 'application/json' },
         method: 'POST',
       };

@@ -1,20 +1,21 @@
 import React from 'react';
 import CookieManager from '@react-native-cookies/cookies';
-import { Text } from 'react-native';
 import jwtDecode from 'jwt-decode';
+import { Text } from 'react-native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import Login from './Login';
 import Chat from './Chat';
-// import ImageApp from './ImageApp';
 
 const URL = 'https://lxya-mjz-lxya.vercel.app';
-// const URL = "https://e2e1-205-178-103-32.ngrok.io"
 
 const cookieNames = {
   token: '__Secure-next-auth.session-token',
   csrf: '__Host-next-auth.csrf-token',
   callback: '__Secure-next-auth.callback-url',
 };
+
+const Stack = createNativeStackNavigator();
 
 function Main() {
   const [loggedIn, setLoggedIn] = React.useState<boolean | null>(null);
@@ -64,24 +65,28 @@ function Main() {
   };
 
   const login = async () => {
-    const res = await fetch(`${URL}/api/auth/csrf`, {
-      method: 'GET',
-      credentials: 'include',
-    });
-    const { csrfToken } = await res.json() as { csrfToken: string };
-    const body = {
-      email: 'mj@ziolko.dev',
-      password: 'test',
-      csrfToken,
-    };
-    await fetch(`${URL}/api/auth/callback/credentials`, {
-      method: 'POST',
-      credentials: 'include',
-      body: JSON.stringify(body),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    try {
+      const res = await fetch(`${URL}/api/auth/csrf`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      const { csrfToken } = await res.json() as { csrfToken: string };
+      const body = {
+        email: 'mj@ziolko.dev',
+        password: 'test',
+        csrfToken,
+      };
+      await fetch(`${URL}/api/auth/callback/credentials`, {
+        method: 'POST',
+        credentials: 'include',
+        body: JSON.stringify(body),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   if (loggedIn === null) {
@@ -90,7 +95,12 @@ function Main() {
     return <Login />;
   }
 
-  return <Chat />;
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="chat" component={Chat} />
+      {/* <Chat /> */}
+    </Stack.Navigator>
+  );
 }
 
 export default Main;

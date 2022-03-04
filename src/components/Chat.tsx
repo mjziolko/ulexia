@@ -1,24 +1,32 @@
-import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 import React from 'react';
-import { LogBox, Platform, Text } from 'react-native';
-import { Bubble, BubbleProps, GiftedChat, IMessage } from 'react-native-gifted-chat';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import SoundPlayer from 'react-native-sound-player';
 import Tts from 'react-native-tts';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
-LogBox.ignoreLogs(['new NativeEventEmitter']);
+import { Platform } from 'react-native';
+import { useTheme } from '@react-navigation/native';
+import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
+import { GiftedChat, IMessage } from 'react-native-gifted-chat';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+
+import Loading from './Loading';
+import { renderBubble, renderTime } from './Message';
 
 const URL = 'https://lxya-mjz-lxya.vercel.app';
 
 type AudioContent = { audioContent: string };
 type TextMessage = { id: number, text: string, createdAt: Date };
 type User = { id: number, name: string, email: string, special: boolean };
+type ChatProps = NativeStackScreenProps<Record<string, undefined>, 'chat'>;
 
-function Chat() {
+function Chat(props: ChatProps) {
+  const theme = useTheme();
   const [user, setUser] = React.useState<User | null>(null);
   const [messages, setMessages] = React.useState<IMessage[]>([]);
   const [loading, setLoading] = React.useState<boolean>(true);
   const { bottom } = useSafeAreaInsets();
+  const { navigation } = props;
 
   React.useEffect(() => {
     SoundPlayer.addEventListener('FinishedLoading', () => {});
@@ -27,8 +35,8 @@ function Chat() {
 
     void (async () => {
       const textResponse = await fetch(`${URL}/api/text`);
-      const textList: TextMessage[] = await textResponse.json() as TextMessage[];
-      const iMessageList: IMessage[] = textList.map((text) => ({ _id: text.id, user: { _id: 1 }, ...text }));
+      const textList = await textResponse.json() as TextMessage[];
+      const iMessageList = textList.map((text) => ({ _id: text.id, user: { _id: 1 }, ...text }));
       setMessages((previousMessages) => GiftedChat.append(previousMessages, iMessageList));
 
       const userResponse = await fetch(`${URL}/api/users`);
@@ -42,6 +50,16 @@ function Chat() {
       setMessages([]);
     });
   }, []);
+
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      // eslint-disable-next-line react/no-unstable-nested-components
+      headerRight: ({ tintColor }) => (
+        // eslint-disable-next-line react/prop-types
+        <Icon name="settings" color={tintColor} size={30} onPress={() => navigation.navigate('settings')} />
+      ),
+    });
+  }, [navigation]);
 
   const onSend = (msgs: IMessage[]) => {
     const { text } = msgs[0];
@@ -68,7 +86,6 @@ function Chat() {
     if (user?.special) {
       const options = {
         body: JSON.stringify({ text, voice: 'en-GB-Wavenet-A' }),
-        // body: JSON.stringify({ text, voice: 'en-US-Wavenet-F' }),
         headers: { 'Content-Type': 'application/json' },
         method: 'POST',
       };
@@ -89,34 +106,8 @@ function Chat() {
     }
   };
 
-  const renderBubble = (bubble: Readonly<BubbleProps<IMessage>>) => {
-    const borderRadius = 10;
-    return (
-      <Bubble
-        // eslint-disable-next-line react/jsx-props-no-spreading
-        {...bubble}
-        containerToNextStyle={{
-          left: { borderBottomLeftRadius: borderRadius },
-          right: { borderBottomRightRadius: borderRadius },
-        }}
-        containerToPreviousStyle={{
-          left: { borderTopLeftRadius: borderRadius },
-          right: { borderTopRightRadius: borderRadius },
-        }}
-        wrapperStyle={{
-          left: { marginRight: 15, borderRadius },
-          right: { marginLeft: 15, borderRadius },
-        }}
-        containerStyle={{
-          left: { flex: 1, alignItems: 'flex-start' },
-          right: { flex: 1, alignItems: 'flex-start' },
-        }}
-      />
-    );
-  };
-
   if (loading) {
-    return <Text>Loading...</Text>;
+    return <Loading />;
   }
 
   return (
@@ -125,7 +116,8 @@ function Chat() {
       messages={messages}
       onLongPress={onPress}
       onSend={(msgs) => onSend(msgs)}
-      renderBubble={renderBubble}
+      renderBubble={(bubble) => renderBubble(bubble, theme)}
+      renderTime={(time) => renderTime(time, theme)}
       user={{ _id: 1 }}
     />
   );

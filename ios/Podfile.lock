@@ -381,6 +381,8 @@ PODS:
     - React-RCTImage
   - RNSoundPlayer (0.11.3):
     - React
+  - RNVectorIcons (9.1.0):
+    - React-Core
   - TextToSpeech (4.1.0):
     - React
   - Yoga (1.14.0)
@@ -458,6 +460,7 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNSoundPlayer (from `../node_modules/react-native-sound-player`)
+  - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - TextToSpeech (from `../node_modules/react-native-tts`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -573,6 +576,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-screens"
   RNSoundPlayer:
     :path: "../node_modules/react-native-sound-player"
+  RNVectorIcons:
+    :path: "../node_modules/react-native-vector-icons"
   TextToSpeech:
     :path: "../node_modules/react-native-tts"
   Yoga:
@@ -639,6 +644,7 @@ SPEC CHECKSUMS:
   ReactCommon: 57b69f6383eafcbd7da625bfa6003810332313c4
   RNScreens: aa12070b21c1d6011b3627a0b1d09b627232b070
   RNSoundPlayer: 6b5532fb8e9afe17af48e62813c80ad568aea5d3
+  RNVectorIcons: 7923e585eaeb139b9f4531d25a125a1500162a0b
   TextToSpeech: b3aa777ff5585705f179c0a2436bfd0926d1716e
   Yoga: e7dc4e71caba6472ff48ad7d234389b91dadc280
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a

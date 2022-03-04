@@ -1,11 +1,14 @@
 import React from 'react';
 import CookieManager from '@react-native-cookies/cookies';
 import jwtDecode from 'jwt-decode';
-import { Text } from 'react-native';
+
+import { Platform } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import Login from './Login';
 import Chat from './Chat';
+import Loading from './Loading';
+import Settings from './Settings';
 
 const URL = 'https://lxya-mjz-lxya.vercel.app';
 
@@ -90,15 +93,26 @@ function Main() {
   };
 
   if (loggedIn === null) {
-    return <Text>Loading...</Text>;
+    return <Loading />;
   } if (loggedIn === false) {
     return <Login />;
   }
 
   return (
-    <Stack.Navigator>
-      <Stack.Screen name="chat" component={Chat} />
-      {/* <Chat /> */}
+    <Stack.Navigator initialRouteName="chat">
+      <Stack.Screen
+        name="chat"
+        component={Chat}
+        options={{ title: '' }}
+      />
+      <Stack.Screen
+        name="settings"
+        component={Settings}
+        options={{
+          title: 'Settings',
+          headerBackVisible: Platform.OS !== 'android',
+        }}
+      />
     </Stack.Navigator>
   );
 }

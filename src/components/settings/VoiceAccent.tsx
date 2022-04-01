@@ -23,11 +23,13 @@ function VoiceAccent(props: VoiceAccentProps) {
       const lowerVoice = settings.voice.toLowerCase();
       if (lowerVoice.includes('us')) {
         setValue('us');
+        setAccent('us');
       } else if (lowerVoice.includes('gb')) {
         setValue('gb');
+        setAccent('gb');
       }
     }
-  }, [settings, settings?.voice, setValue]);
+  }, [settings, settings?.voice, setValue, setAccent]);
 
   const onSelect = (accent: ItemType) => {
     if (accent.value) {

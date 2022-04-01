@@ -31,18 +31,18 @@ function VoiceGender(props: VoiceGenderProps) {
 
   React.useEffect(() => {
     if (settings && settings.voice) {
-      if (settings.voice in femVoices) {
+      if (femVoices.includes(settings.voice)) {
         setValue('female');
+        setGender('female');
       } else {
         setValue('male');
+        setGender('male');
       }
     }
-  }, [settings, settings?.voice, setValue]);
+  }, [settings, settings?.voice, setValue, setGender]);
 
   const onSelect = (gender: ItemType) => {
-    if (gender.value) {
-      setGender(gender.value as Gender);
-    }
+    setGender(gender.value as Gender);
   };
 
   return (

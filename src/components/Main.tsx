@@ -10,26 +10,25 @@ import useLoginFlow from '../hooks/useLoginFlow';
 import UserContext from '../contexts/UserContext';
 import User from '../types/User';
 import SettingsType from '../types/Settings';
-
-const URL = 'https://lxya-mjz-lxya.vercel.app';
+import { get } from '../api';
 
 const Stack = createNativeStackNavigator();
 
 function Main() {
-  const loggedIn = useLoginFlow();
   const [user, setUser] = React.useState<User | null>(null);
   const [settings, setSettings] = React.useState<SettingsType | null>(null);
-  const userContextVals = React.useMemo(() => ({ user, settings, setSettings }), [user, settings, setSettings]);
+  const loggedIn = useLoginFlow();
+
+  const userContextVals = React.useMemo(() => (
+    { user, settings, setSettings }
+  ), [user, settings, setSettings]);
 
   React.useEffect(() => {
     void (async () => {
-      const userResponse = await fetch(`${URL}/api/users`);
-      const loggedInUser: User = await userResponse.json() as User;
+      const loggedInUser = await get<User>('user');
       setUser(loggedInUser);
-
-      const settingsResponse = await fetch(`${URL}/api/settings`);
-      const s: SettingsType = await settingsResponse.json() as SettingsType;
-      setSettings(s);
+      const userSettings = await get<SettingsType>('settings');
+      setSettings(userSettings);
     })();
   }, []);
 

@@ -92,7 +92,7 @@ function ImageApp() {
 
   const takePicture = () => {
     const upload = async (imageData: string) => {
-      const response = await ReactNativeBlobUtil.fetch('POST', `${URL}/api/images`, {}, [
+      const response = await ReactNativeBlobUtil.fetch('POST', `${URL}/api/image`, {}, [
         {
           name: 'image', filename: 'image.jpg', type: 'image/jpeg', data: imageData,
         },
@@ -103,16 +103,20 @@ function ImageApp() {
     void camera.current?.takePictureAsync({
       base64: true,
       quality: 0.2,
-      onPictureSaved: async ({ uri }) => {
+      onPictureSaved: ({ uri }) => {
       // todo: calculate image size and adjust scale instead of resizing image (costly)
         const { height, width, scale } = Dimensions.get('screen');
-        const { uri: resizedUri, base64: resizedBase64 } = await manipulateAsync(
+        // const { uri: resizedUri, base64: resizedBase64 } = manipulateAsync(
+        manipulateAsync(
           uri,
           [{ resize: { height: height * scale, width: width * scale } }],
           { base64: true },
-        );
-        setImg(resizedUri);
-        if (resizedBase64) void upload(resizedBase64);
+        ).then(({ uri: resizedUri, base64: resizedBase64 }) => {
+          setImg(resizedUri);
+          if (resizedBase64) void upload(resizedBase64);
+        }).catch(() => {
+          console.error('oh');
+        });
       },
     });
     camera.current?.pausePreview();

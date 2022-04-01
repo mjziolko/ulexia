@@ -8,12 +8,12 @@ type UserContextType = {
   setSettings: (settings: Settings) => void,
 };
 
-const def: UserContextType = {
+const defaultUserContext: UserContextType = {
   user: null,
   settings: null,
   setSettings: () => {},
 };
 
-const UserContext = React.createContext<UserContextType>(def);
+const UserContext = React.createContext<UserContextType>(defaultUserContext);
 
 export default UserContext;

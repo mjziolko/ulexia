@@ -4,8 +4,7 @@ import Tts from 'react-native-tts';
 import { Platform } from 'react-native';
 
 import UserContext from '../contexts/UserContext';
-
-const URL = 'https://lxya-mjz-lxya.vercel.app';
+import { post } from '../api';
 
 type AudioContent = { audioContent: string };
 
@@ -20,21 +19,16 @@ const useSpeaker = () => {
 
   const speak = async (text: string, voice = settings?.voice) => {
     if (user?.special) {
-      const options = {
-        body: JSON.stringify({ text, voice }),
-        headers: { 'Content-Type': 'application/json' },
-        method: 'POST',
-      };
-
       try {
-        const response = await fetch(`${URL}/api/tts`, options);
-        const { audioContent } = await response.json() as AudioContent;
+        const { audioContent } = await post<AudioContent>('tts', { text, voice });
+        console.log(audioContent);
         const url = `data:audio/mp3;base64,${audioContent}`;
         if (Platform.OS === 'ios') {
           SoundPlayer.setSpeaker(true);
         }
         SoundPlayer.playUrl(url);
-      } catch {
+      } catch (e) {
+        console.error(e);
         Tts.speak(text);
       }
     } else {

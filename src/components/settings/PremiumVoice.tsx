@@ -1,12 +1,11 @@
 import React from 'react';
 import DropDownPicker, { ItemType, ValueType } from 'react-native-dropdown-picker';
+import { post } from '../../api';
 
 import UserContext from '../../contexts/UserContext';
 import useSpeaker from '../../hooks/useSpeaker';
 import Accent from '../../types/Accent';
 import Gender from '../../types/Gender';
-
-const URL = 'https://lxya-mjz-lxya.vercel.app';
 
 const femUSVoices = [
   { label: 'Catherine', value: 'en-US-Wavenet-C' },
@@ -30,12 +29,14 @@ const mascGBVoices = [
   { label: 'Duncan', value: 'en-GB-Wavenet-D' },
   { label: 'Idris', value: 'en-GB-Wavenet-I' },
 ];
-const combinedVoices = femGBVoices.concat(femUSVoices).concat(mascGBVoices).concat(mascUSVoices)
-  .sort((v1, v2) => {
-    if (v1.label < v2.label) { return -1; }
-    if (v1.label > v2.label) { return 1; }
-    return 0;
-  });
+
+const voiceSort = (v1: { label: string, value: string }, v2: { label: string, value: string }) => {
+  if (v1.label < v2.label) { return -1; }
+  if (v1.label > v2.label) { return 1; }
+  return 0;
+};
+
+const combinedVoices = femGBVoices.concat(femUSVoices).concat(mascGBVoices).concat(mascUSVoices).sort(voiceSort);
 
 type PremiumVoiceProps = { gender: Gender | null, accent: Accent | null };
 
@@ -61,11 +62,7 @@ function PremiumVoice(props: PremiumVoiceProps) {
 
   const onSelect = (voice: ItemType) => {
     void speak(`Hello, my name is ${voice.label as string}!`, voice.value as string);
-    void fetch(`${URL}/api/settings`, {
-      body: JSON.stringify({ voice: voice.value }),
-      headers: { 'Content-Type': 'application/json' },
-      method: 'POST',
-    });
+    void post('settings', { voice: voice.value });
     setSettings({ voice: voice.value as string });
   };
 

@@ -3,22 +3,19 @@ import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useTheme } from '@react-navigation/native';
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
-import { GiftedChat, IMessage } from 'react-native-gifted-chat';
+import { Actions, ActionsProps, GiftedChat, IMessage } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import Loading from './Loading';
-import { renderBubble, renderTime } from './Message';
-import UserContext from '../contexts/UserContext';
 import useSpeaker from '../hooks/useSpeaker';
-
-const URL = 'https://lxya-mjz-lxya.vercel.app';
+import { renderBubble, renderTime } from './Message';
+import { get, post } from '../api';
 
 type TextMessage = { id: number, text: string, createdAt: Date };
 type ChatProps = NativeStackScreenProps<Record<string, undefined>, 'chat'>;
 
 function Chat(props: ChatProps) {
-  const { user, settings } = React.useContext(UserContext);
   const [messages, setMessages] = React.useState<IMessage[]>([]);
   const [loading, setLoading] = React.useState<boolean>(true);
   const { bottom } = useSafeAreaInsets();
@@ -31,8 +28,7 @@ function Chat(props: ChatProps) {
       const startTime = new Date();
 
       try {
-        const textResponse = await fetch(`${URL}/api/text`);
-        const textList = await textResponse.json() as TextMessage[];
+        const textList = await get<TextMessage[]>('text');
         const iMessageList = textList.map((text) => ({ _id: text.id, user: { _id: 1 }, ...text }));
         setMessages((previousMessages) => GiftedChat.append(previousMessages, iMessageList));
       } catch (e) {
@@ -74,12 +70,13 @@ function Chat(props: ChatProps) {
   };
 
   const createText = async (text: string) => {
-    const options = {
-      body: JSON.stringify({ text }),
-      headers: { 'Content-Type': 'application/json' },
-      method: 'POST',
-    };
-    await fetch(`${URL}/api/text`, options);
+    await post('text', { text });
+  };
+
+  const renderAction = (action: Readonly<ActionsProps>) => {
+    console.log(action);
+    console.log('lol');
+    return <Actions />;
   };
 
   if (loading) {
@@ -92,6 +89,7 @@ function Chat(props: ChatProps) {
       messages={messages}
       onLongPress={onPress}
       onSend={(msgs) => onSend(msgs)}
+      renderActions={(action) => renderAction(action)}
       renderBubble={(bubble) => renderBubble(bubble, theme)}
       renderTime={(time) => renderTime(time, theme)}
       user={{ _id: 1 }}

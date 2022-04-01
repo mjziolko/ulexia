@@ -3,7 +3,7 @@ import React from 'react';
 import CookieManager from '@react-native-cookies/cookies';
 import jwtDecode from 'jwt-decode';
 
-const URL = 'https://lxya-mjz-lxya.vercel.app';
+import { get, post, URL } from '../api';
 
 const cookieNames = {
   token: '__Secure-next-auth.session-token',
@@ -68,38 +68,20 @@ const useLoginFlow = () => {
   };
 
   const refreshToken = async () => {
-    await fetch(`${URL}/api/auth/csrf`, {
-      method: 'GET',
-      credentials: 'include',
-    });
-    const re = await fetch(`${URL}/api/auth/session`, {
-      method: 'GET',
-      credentials: 'include',
-    });
-    console.log(re);
+    await get('auth/csrf');
+    await get('auth/session');
   };
 
   const login = async () => {
     console.log('Logging in');
     const startTime = new Date();
     try {
-      const res = await fetch(`${URL}/api/auth/csrf`, {
-        method: 'GET',
-        credentials: 'include',
-      });
-      const { csrfToken } = await res.json() as { csrfToken: string };
-      const body = {
+      const { csrfToken } = await get<{ csrfToken: string }>('auth/csrf');
+      console.log(csrfToken);
+      await post('auth/callback/credentials', {
         email: 'mj@ziolko.dev',
         password: 'test',
         csrfToken,
-      };
-      await fetch(`${URL}/api/auth/callback/credentials`, {
-        method: 'POST',
-        credentials: 'include',
-        body: JSON.stringify(body),
-        headers: {
-          'Content-Type': 'application/json',
-        },
       });
     } catch (e) {
       console.error(e);

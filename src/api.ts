@@ -1,6 +1,9 @@
-// export const URL = 'https://lxya-mjz-lxya.vercel.app';
-// export const URL = 'https://lexia-mjz-lexia.vercel.app';
-export const URL = 'https://www.ulexiaapp.com';
+// export const URL = 'https://www.ulexiaapp.com';
+// export const URL = 'https://ulexia.app';
+export const URL = 'https://ulexia.vercel.app';
+
+// const prod = process.env.PROD != null;
+// export const URL = prod ? 'https://www.ulexiaapp.com' : 'https://ulexia.app';
 
 export const get = async <T> (endpoint: string): Promise<T> => {
   const res = await fetch(`${URL}/api/${endpoint}`);

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Platform } from 'react-native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { TabView, SceneMap } from 'react-native-tab-view';
+import { IMessage } from 'react-native-gifted-chat';
 
 import Login from './Login';
 import Chat from './Chat';
@@ -11,17 +11,34 @@ import UserContext from '../contexts/UserContext';
 import User from '../types/User';
 import SettingsType from '../types/Settings';
 import { get } from '../api';
-
-const Stack = createNativeStackNavigator();
+import ImageApp from './ImageApp';
+import MessageContext from '../contexts/MessageContext';
 
 function Main() {
   const [user, setUser] = React.useState<User | null>(null);
   const [settings, setSettings] = React.useState<SettingsType | null>(null);
+  const [messages, setMessages] = React.useState<Array<IMessage>>([]);
+  const [sceneIndex, setSceneIndex] = React.useState<number>(1);
   const loggedIn = useLoginFlow();
+
+  const renderScene = SceneMap({
+    chat: Chat,
+    image: ImageApp,
+    settings: Settings,
+  });
+  const routes = [
+    { key: 'image', title: 'Image' },
+    { key: 'chat', title: 'Chat' },
+    { key: 'settings', title: 'Settings' },
+  ];
 
   const userContextVals = React.useMemo(() => (
     { user, settings, setSettings }
   ), [user, settings, setSettings]);
+
+  const messageContextVals = React.useMemo(() => (
+    { messages, setMessages }
+  ), [messages, setMessages]);
 
   React.useEffect(() => {
     void (async () => {
@@ -40,21 +57,14 @@ function Main() {
 
   return (
     <UserContext.Provider value={userContextVals}>
-      <Stack.Navigator initialRouteName="chat">
-        <Stack.Screen
-          name="chat"
-          component={Chat}
-          options={{ title: '' }}
+      <MessageContext.Provider value={messageContextVals}>
+        <TabView
+          navigationState={{ index: sceneIndex, routes }}
+          renderScene={renderScene}
+          onIndexChange={setSceneIndex}
+          renderTabBar={(props) => undefined}
         />
-        <Stack.Screen
-          name="settings"
-          component={Settings}
-          options={{
-            title: 'Settings',
-            headerBackVisible: Platform.OS !== 'android',
-          }}
-        />
-      </Stack.Navigator>
+      </MessageContext.Provider>
     </UserContext.Provider>
   );
 }

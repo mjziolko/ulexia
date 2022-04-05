@@ -21,14 +21,12 @@ const useSpeaker = () => {
     if (user?.special) {
       try {
         const { audioContent } = await post<AudioContent>('tts', { text, voice });
-        console.log(audioContent);
         const url = `data:audio/mp3;base64,${audioContent}`;
         if (Platform.OS === 'ios') {
           SoundPlayer.setSpeaker(true);
         }
         SoundPlayer.playUrl(url);
       } catch (e) {
-        console.error(e);
         Tts.speak(text);
       }
     } else {

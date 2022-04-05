@@ -7,9 +7,8 @@ import pointInPolygon from 'point-in-polygon';
 import { Camera } from 'expo-camera';
 import { Dimensions, GestureResponderEvent, Image, NativeTouchEvent, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { manipulateAsync } from 'expo-image-manipulator';
-
-const URL = 'https://lxya-mjz-lxya.vercel.app';
-// const URL = "https://e2e1-205-178-103-32.ngrok.io"
+import { URL } from '../api';
+import MessageContext, { addImageMessage } from '../contexts/MessageContext';
 
 // todo: refactor to separate components:
 //       * camera logic
@@ -18,15 +17,15 @@ const URL = 'https://lxya-mjz-lxya.vercel.app';
 //       * drawing
 //       * etc
 
-interface Vertex {
+type Vertex = {
   x: number;
   y: number;
-}
+};
 
-interface Word {
+type Word = {
   vertices: Vertex[];
   paragraph: string;
-}
+};
 
 type ImageWrapperProps = {
   image: string,
@@ -34,22 +33,8 @@ type ImageWrapperProps = {
   canvas: RefObject<Canvas>
 };
 
-function ImageWrapper({ image, onPress, canvas }: ImageWrapperProps) {
-  if (image) {
-    return (
-      <>
-        <Pressable onPress={onPress} style={{ zIndex: 20 }}>
-          <Canvas ref={canvas} />
-        </Pressable>
-        <Image source={{ uri: image }} style={{ ...styles.camera, zIndex: 10 }} />
-      </>
-    );
-  }
-
-  return <View />;
-}
-
 function ImageApp() {
+  const { messages, setMessages } = React.useContext(MessageContext);
   const [permission, setPermission] = React.useState<boolean>(false);
   const [img, setImg] = React.useState<string>('');
   const [words, setWords] = React.useState<Word[]>([]);
@@ -91,15 +76,6 @@ function ImageApp() {
   }, [canvas, img, words]);
 
   const takePicture = () => {
-    const upload = async (imageData: string) => {
-      const response = await ReactNativeBlobUtil.fetch('POST', `${URL}/api/image`, {}, [
-        {
-          name: 'image', filename: 'image.jpg', type: 'image/jpeg', data: imageData,
-        },
-      ]);
-      const data = await response.json() as Word[];
-      setWords(data);
-    };
     void camera.current?.takePictureAsync({
       base64: true,
       quality: 0.2,
@@ -113,13 +89,27 @@ function ImageApp() {
           { base64: true },
         ).then(({ uri: resizedUri, base64: resizedBase64 }) => {
           setImg(resizedUri);
-          if (resizedBase64) void upload(resizedBase64);
-        }).catch(() => {
-          console.error('oh');
+          if (resizedBase64) void upload(resizedBase64, resizedUri);
+        }).catch((e) => {
+          console.error(e);
         });
       },
     });
     camera.current?.pausePreview();
+  };
+
+  const upload = async (imageData: string, imageUri: string) => {
+    try {
+      const response = await ReactNativeBlobUtil.fetch('POST', `${URL}/api/image`, {}, [
+        { name: 'image', filename: 'image.jpg', type: 'image/jpeg', data: imageData },
+      ]);
+      const data = await response.json() as Word[];
+      setWords(data);
+      const text: string = data.map((word) => word.paragraph).join('\n');
+      addImageMessage(text, imageUri, setMessages);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const clearPicture = () => {
@@ -150,7 +140,7 @@ function ImageApp() {
   }
 
   return (
-    <View>
+    <View style={styles.container}>
       <ImageWrapper
         image={img}
         onPress={canvasPress}
@@ -161,7 +151,7 @@ function ImageApp() {
         ref={camera}
         style={{ ...styles.camera, zIndex: 1 }}
       />
-      <View style={{ ...styles.buttonContainer, zIndex: 100 }}>
+      <View style={styles.buttonContainer}>
         <TouchableOpacity onPress={img ? clearPicture : takePicture} style={styles.button} />
       </View>
     </View>
@@ -182,6 +172,7 @@ const styles = StyleSheet.create({
     left: '50%',
     bottom: 25,
     marginLeft: -50,
+    zIndex: 100,
   },
   camera: {
     flex: 1,
@@ -191,7 +182,26 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
+    zIndex: 1,
+  },
+  container: {
+    height: '100%',
   },
 });
+
+function ImageWrapper({ image, onPress, canvas }: ImageWrapperProps) {
+  if (image) {
+    return (
+      <>
+        <Pressable onPress={onPress} style={{ zIndex: 20 }}>
+          <Canvas ref={canvas} />
+        </Pressable>
+        <Image source={{ uri: image }} style={{ ...styles.camera, zIndex: 10 }} />
+      </>
+    );
+  }
+
+  return <View />;
+}
 
 export default ImageApp;

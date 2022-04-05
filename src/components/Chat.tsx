@@ -1,25 +1,24 @@
 /* eslint-disable no-console */
 import React from 'react';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useTheme } from '@react-navigation/native';
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
-import { Actions, ActionsProps, GiftedChat, IMessage } from 'react-native-gifted-chat';
+import { GiftedChat, IMessage } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import Loading from './Loading';
 import useSpeaker from '../hooks/useSpeaker';
-import { renderBubble, renderTime } from './Message';
+import { CustomBubble, renderTime } from './Message';
 import { get, post } from '../api';
+import MessageContext from '../contexts/MessageContext';
 
-type TextMessage = { id: number, text: string, createdAt: Date };
+type TextMessage = { id: number, text: string, createdAt: Date, image: string };
 type ChatProps = NativeStackScreenProps<Record<string, undefined>, 'chat'>;
 
 function Chat(props: ChatProps) {
-  const [messages, setMessages] = React.useState<IMessage[]>([]);
+  const { messages, setMessages } = React.useContext(MessageContext);
   const [loading, setLoading] = React.useState<boolean>(true);
   const { bottom } = useSafeAreaInsets();
-  const { navigation } = props;
   const theme = useTheme();
   const speak = useSpeaker();
 
@@ -46,16 +45,7 @@ function Chat(props: ChatProps) {
     return (() => {
       setMessages([]);
     });
-  }, []);
-
-  React.useLayoutEffect(() => {
-    navigation.setOptions({
-      // eslint-disable-next-line react/no-unstable-nested-components
-      headerRight: ({ tintColor }) => (
-        <Icon name="settings" color={tintColor} size={30} onPress={() => navigation.navigate('settings')} />
-      ),
-    });
-  }, [navigation]);
+  }, [setMessages]);
 
   const onSend = (msgs: IMessage[]) => {
     const { text } = msgs[0];
@@ -73,11 +63,7 @@ function Chat(props: ChatProps) {
     await post('text', { text });
   };
 
-  const renderAction = (action: Readonly<ActionsProps>) => {
-    console.log(action);
-    console.log('lol');
-    return <Actions />;
-  };
+  // const renderAction = (action: Readonly<ActionsProps>) => <Actions />;
 
   if (loading) {
     return <Loading />;
@@ -89,8 +75,8 @@ function Chat(props: ChatProps) {
       messages={messages}
       onLongPress={onPress}
       onSend={(msgs) => onSend(msgs)}
-      renderActions={(action) => renderAction(action)}
-      renderBubble={(bubble) => renderBubble(bubble, theme)}
+      // renderActions={(action) => renderAction(action)}
+      renderBubble={(bubble) => <CustomBubble bubble={bubble} theme={theme} />}
       renderTime={(time) => renderTime(time, theme)}
       user={{ _id: 1 }}
     />

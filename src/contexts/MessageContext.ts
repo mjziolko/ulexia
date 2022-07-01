@@ -1,5 +1,7 @@
+/* eslint-disable no-underscore-dangle */
 import React, { Dispatch, SetStateAction } from 'react';
 import { GiftedChat, IMessage } from 'react-native-gifted-chat';
+import { TextMessage } from '../types/Message';
 
 type SetMessages = Dispatch<SetStateAction<IMessage[]>>;
 
@@ -14,7 +16,6 @@ export const addImageMessage = (
   setMessages: SetMessages,
 ) => {
   setMessages((prevMessages) => {
-    // eslint-disable-next-line no-underscore-dangle
     const id: number = prevMessages[0] ? Number(prevMessages[0]._id) + 1 : 1;
     const message: IMessage = {
       _id: id,
@@ -34,7 +35,6 @@ export const updateMessageImage = (
 ) => {
   setMessages((prevMessages) => {
     const updatedMessages = prevMessages.map((message) => {
-      // eslint-disable-next-line no-underscore-dangle
       if (message._id === id) {
         const updatedMessage = { image, ...message };
 

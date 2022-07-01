@@ -4,18 +4,17 @@ import { useTheme } from '@react-navigation/native';
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 import { GiftedChat, IMessage } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import Loading from './Loading';
 import useSpeaker from '../hooks/useSpeaker';
-import { CustomBubble, renderTime } from './Message';
+import CustomBubble from './Message';
 import { get, post } from '../api';
 import MessageContext from '../contexts/MessageContext';
+import Word from '../types/Word';
 
-type TextMessage = { id: number, text: string, createdAt: Date, image: string };
-type ChatProps = NativeStackScreenProps<Record<string, undefined>, 'chat'>;
+type TextMessage = { id: number, text: string, wordLocations: Word[], createdAt: Date, image: string };
 
-function Chat(props: ChatProps) {
+function Chat() {
   const { messages, setMessages } = React.useContext(MessageContext);
   const [loading, setLoading] = React.useState<boolean>(true);
   const { bottom } = useSafeAreaInsets();
@@ -55,15 +54,15 @@ function Chat(props: ChatProps) {
   };
 
   const onPress = (_context: object, message: IMessage) => {
+    // eslint-disable-next-line no-underscore-dangle
+    const text = messages.find((m) => m._id === message._id)?.text || '';
     void impactAsync(ImpactFeedbackStyle.Heavy);
-    void speak(message.text);
+    void speak(text);
   };
 
   const createText = async (text: string) => {
     await post('text', { text });
   };
-
-  // const renderAction = (action: Readonly<ActionsProps>) => <Actions />;
 
   if (loading) {
     return <Loading />;
@@ -75,9 +74,7 @@ function Chat(props: ChatProps) {
       messages={messages}
       onLongPress={onPress}
       onSend={(msgs) => onSend(msgs)}
-      // renderActions={(action) => renderAction(action)}
       renderBubble={(bubble) => <CustomBubble bubble={bubble} theme={theme} />}
-      renderTime={(time) => renderTime(time, theme)}
       user={{ _id: 1 }}
     />
   );

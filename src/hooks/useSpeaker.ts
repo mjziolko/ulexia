@@ -15,6 +15,14 @@ const useSpeaker = () => {
     SoundPlayer.addEventListener('FinishedLoading', () => {});
     SoundPlayer.addEventListener('FinishedLoadingURL', () => {});
     SoundPlayer.addEventListener('FinishedPlaying', () => {});
+
+    void Tts.setDefaultLanguage('en-US');
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+    void Tts.setIgnoreSilentSwitch('ignore' as any);
+    Tts.addEventListener('tts-start', () => {});
+    Tts.addEventListener('tts-finish', () => {});
+    Tts.addEventListener('tts-progress', () => {});
+    Tts.addEventListener('tts-cancel', () => {});
   });
 
   const speak = async (text: string, voice = settings?.voice) => {

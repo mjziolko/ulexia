@@ -1,0 +1,48 @@
+diff --git a/node_modules/react-native-canvas/dist/Image.js b/node_modules/react-native-canvas/dist/Image.js
+index 7d53953..e297578 100644
+--- a/node_modules/react-native-canvas/dist/Image.js
++++ b/node_modules/react-native-canvas/dist/Image.js
+@@ -3,8 +3,6 @@ Object.defineProperty(exports, "__esModule", {
+ });
+ exports.default = void 0;
+ 
+-var _Canvas = _interopRequireDefault(require("./Canvas"));
+-
+ var _webviewBinders = require("./webview-binders");
+ 
+ var _dec, _dec2, _dec3, _class;
+@@ -31,10 +29,6 @@ var Image = (_dec = (0, _webviewBinders.webviewProperties)({
+     return _this.canvas.addMessageListener(listener);
+   };
+ 
+-  if (!(canvas instanceof _Canvas.default)) {
+-    throw new Error('Image must be initialized with a Canvas instance');
+-  }
+-
+   this.canvas = canvas;
+ 
+   if (this.onConstruction && !noOnConstruction) {
+diff --git a/node_modules/react-native-canvas/dist/ImageData.js b/node_modules/react-native-canvas/dist/ImageData.js
+index 6534a3e..8d07c1a 100644
+--- a/node_modules/react-native-canvas/dist/ImageData.js
++++ b/node_modules/react-native-canvas/dist/ImageData.js
+@@ -3,8 +3,6 @@ Object.defineProperty(exports, "__esModule", {
+ });
+ exports.default = void 0;
+ 
+-var _Canvas = _interopRequireDefault(require("./Canvas"));
+-
+ var _webviewBinders = require("./webview-binders");
+ 
+ var _dec, _class;
+@@ -26,10 +24,6 @@ var ImageData = (_dec = (0, _webviewBinders.webviewConstructor)('ImageData'), _d
+     return _this.canvas.addMessageListener(listener);
+   };
+ 
+-  if (!(canvas instanceof _Canvas.default)) {
+-    throw new Error('ImageData must be initialized with a Canvas instance');
+-  }
+-
+   this.canvas = canvas;
+ 
+   if (this.onConstruction && !noOnConstruction) {

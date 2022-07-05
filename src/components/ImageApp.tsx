@@ -80,7 +80,6 @@ function ImageApp() {
     <View style={styles.container}>
       <SpeakingImage image={img} words={words} />
       <Camera
-        type={Camera.Constants.Type.back}
         ref={camera}
         style={{ ...styles.camera, zIndex: 1 }}
       />
